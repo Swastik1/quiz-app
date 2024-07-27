@@ -1,7 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import questions from "../questions";
 import quizCompleteLogo from "../assets/quiz-complete.png";
-import QuizTimer from "./QuizTimer";
+import Question from "./Question.jsx";
 
 const Quiz = () => {
   const [answerState, setAnswerState] = useState("");
@@ -48,47 +48,17 @@ const Quiz = () => {
     );
   }
 
-  const shuffledAnswers = [...questions[activeQuestionIndex].answers];
-  shuffledAnswers.sort(() => Math.random() - 0.5);
-
   return (
     <div id="quiz">
-      <div id="questions">
-        <QuizTimer
-          key={activeQuestionIndex}
-          timeout={10000}
-          onTimeOut={handleSkipAnswer}
-        />
-        <h2>{questions[activeQuestionIndex].text}</h2>
-        <ul id="answers">
-          {shuffledAnswers.map((answer) => {
-            let cssClasses = "";
-            const isSelected = userAnswers[userAnswers.length - 1] === answer;
-
-            if (answerState === "answered" && isSelected) {
-              cssClasses = "selected";
-            }
-
-            if (
-              (answerState === "correct" || answerState === "wrong") &&
-              isSelected
-            ) {
-              cssClasses = answerState;
-            }
-
-            return (
-              <li key={answer} className="answer">
-                <button
-                  onClick={() => handleSelectedAnswer(answer)}
-                  className={cssClasses}
-                >
-                  {answer}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <Question
+        key={activeQuestionIndex}
+        questionText={questions[activeQuestionIndex].text}
+        answers={questions[activeQuestionIndex].answers}
+        selectedAnswer={userAnswers[userAnswers.length - 1]}
+        answerState={answerState}
+        onSelect={handleSelectedAnswer}
+        onSkipAnswer={handleSkipAnswer}
+      />
     </div>
   );
 };
